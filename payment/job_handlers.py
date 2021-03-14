@@ -4,10 +4,14 @@ import multiprocessing
 from redis import Redis
 from .serializers import TrxJobSerializer, OtpSerializer
 import json
-
 from multiprocessing import Process
 from modules.services.payment.flutterwave import FlutterwavePaymentProvider
-from .models import Transaction, OrderTransaction
+
+from django.apps import apps
+
+
+Transaction = apps.get_model("payment","Transaction")
+OrderTransaction = apps.get_model("payment","OrderTransaction")
 
 
 TOPIC_ID = getattr(settings, "KAFKA_TOPIC_ID", "5myef1xu-messages")
@@ -108,13 +112,15 @@ def authorize_trx_job():
                 trx.save()
 
                 redis.publish(f"payment_status#{otp_data.validated_data['trxjob_id']}",json.dumps(response))
-            
-# Create Transaction job process
-create_trx_job_process = Process(target=create_trx_job, args=[], group=None)
-create_trx_job_process.daemon = True
-create_trx_job_process.start()
 
-# Authorize Transaction job process
-authorize_trx_job_process = Process(target=authorize_trx_job, args=[], group=None)
-authorize_trx_job_process.daemon = True
-authorize_trx_job_process.start()
+
+def start_services():
+    # Create Transaction job process
+    create_trx_job_process = Process(target=create_trx_job, args=[], group=None)
+    create_trx_job_process.daemon = True
+    create_trx_job_process.start()
+
+    # Authorize Transaction job process
+    authorize_trx_job_process = Process(target=authorize_trx_job, args=[], group=None)
+    authorize_trx_job_process.daemon = True
+    authorize_trx_job_process.start()
