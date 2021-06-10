@@ -14,3 +14,8 @@ export KAFKA_HOST=rocket-01.srvs.cloudkafka.com:9094
 export KAFKA_USERNAME=5myef1xu
 export KAFKA_PASSWORD=p9XeeG6glskK4uuN3zWhwInjXHSPhrsE
 export KAFKA_TOPIC_PREFIX=5myef1xu-
+
+
+export PAYMENT_SERVICE_REDIS_PORT=6379
+export PAYMENT_SERVICE_REDIS_HOST=localhost
+export PAYMENT_SERVICE_REDIS_PASSWORD=
